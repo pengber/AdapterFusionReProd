@@ -82,12 +82,32 @@ model = BertModelWithHeads.from_pretrained(
 from transformers.adapters.composition import Fuse
 
 # Load the pre-trained adapters we want to fuse
-model.load_adapter("nli/multinli@ukp", load_as="multinli", with_head=False)
+model.load_adapter("nli/multinli@ukp", with_head=False)
 model.load_adapter("sts/qqp@ukp", with_head=False)
-model.load_adapter("nli/qnli@ukp", with_head=False)
+model.load_adapter("sentiment/sst-2@ukp", with_head=False)
+model.load_adapter("comsense/winogrande@ukp", with_head=False)
+model.load_adapter("sentiment/imdb@ukp", with_head=False)
+model.load_adapter("comsense/hellaswag@ukp", with_head=False)
+
+model.load_adapter("comsense/siqa@ukp", with_head=False)
+model.load_adapter("comsense/cosmosqa@ukp", with_head=False)
+model.load_adapter("nli/scitail@ukp", with_head=False)
+model.load_adapter("argument/ukpsent@ukp", with_head=False)
+
+model.load_adapter("comsense/csqa@ukp", with_head=False)
+model.load_adapter("qa/boolq@ukp", with_head=False)
+model.load_adapter("sts/mrpc@ukp", with_head=False)
+
+model.load_adapter("nli/sick@ukp", with_head=False)
+model.load_adapter("nli/rte@ukp", with_head=False)
+model.load_adapter("nli/cb@ukp", with_head=False)
+
 # Add a fusion layer for all loaded adapters
-model.add_adapter_fusion(Fuse("multinli", "qqp", "qnli"))
-model.set_active_adapters(Fuse("multinli", "qqp", "qnli"))
+# Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb")
+# model.add_adapter_fusion(Fuse("multinli", "qqp", "qnli"))
+model.add_adapter_fusion(Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb"))
+# model.set_active_adapters(Fuse("multinli", "qqp", "qnli"))
+model.set_active_adapters(Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb"))
 
 # Add a classification head for our target task
 model.add_classification_head("cb", num_labels=len(id2label))
