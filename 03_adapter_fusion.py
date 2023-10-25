@@ -122,7 +122,7 @@ The syntax for the adapter setup (which is also applied to other methods such as
 """
 
 # Unfreeze and activate fusion setup
-adapter_setup = Fuse("multinli", "qqp", "qnli")
+adapter_setup = Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb")
 model.train_adapter_fusion(adapter_setup)
 
 """For training, we make use of the `Trainer` class built-in into `transformers`. We configure the training process using a `TrainingArguments` object and define a method that will calculate the evaluation accuracy in the end. We pass both, together with the training and validation split of our dataset, to the trainer instance."""
