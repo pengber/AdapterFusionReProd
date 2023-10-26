@@ -85,7 +85,7 @@ model = BertModelWithHeads.from_pretrained(
 from transformers.adapters.composition import Fuse
 
 # Load the pre-trained adapters we want to fuse
-lang_adapter_config = AdapterConfig.load("pfeiffer", non_linearity="gelu", reduction_factor=2)
+# lang_adapter_config = AdapterConfig.load("pfeiffer", non_linearity="gelu", reduction_factor=2)
 model.load_adapter("nli/multinli@ukp", load_as="multinli", with_head=False,model_name=model_name)
 model.load_adapter("sts/qqp@ukp",  load_as="qqp", with_head=False, model_name=model_name,)
 model.load_adapter("sentiment/sst-2@ukp",  load_as="sst-2", with_head=False, model_name=model_name)
