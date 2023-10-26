@@ -138,7 +138,7 @@ from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
 
 training_args = TrainingArguments(
     learning_rate=5e-5,
-    num_train_epochs=5,
+    num_train_epochs=20,
     per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
     logging_steps=200,
