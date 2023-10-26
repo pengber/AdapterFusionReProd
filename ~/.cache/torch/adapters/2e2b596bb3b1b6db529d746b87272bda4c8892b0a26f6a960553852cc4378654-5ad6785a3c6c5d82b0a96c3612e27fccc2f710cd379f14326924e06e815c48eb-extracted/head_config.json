@@ -1,1 +1,0 @@
-{"config": null, "hidden_size": 768, "model_class": "BertForSequenceClassification", "model_name": null, "model_type": "bert", "name": null, "label2id": {"contradiction": 0, "entailment": 1, "neutral": 2}, "num_labels": 3}
