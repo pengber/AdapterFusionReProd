@@ -17,18 +17,20 @@ For this guide, we select **CommitmentBank** ([De Marneffe et al., 2019](https:/
 Again, we install `adapter-transformers` and HuggingFace's `datasets` library first:
 """
 
-# !pip install -U adapter-transformers
-# !pip install datasets
+#!pip install -U adapter-transformers
+#!pip install datasets
 
 """## Dataset Preprocessing
 
 Before setting up training, we first prepare the training data. CommimentBank is part of the SuperGLUE benchmark and can be loaded via HuggingFace `datasets` using one line of code:
 """
-
+import datasets
 from datasets import load_dataset
 
+# dataset = load_dataset("super_glue", "cb")
 dataset = load_dataset("./data/super_glue/cb")
-dataset.num_rows
+
+print(dataset.num_rows)
 
 """Every dataset sample has a premise, a hypothesis and a three-class class label:"""
 
@@ -37,10 +39,8 @@ dataset['train'].features
 """Now, we need to encode all dataset samples to valid inputs for our `bert-base-uncased` model. Using `dataset.map()`, we can pass the full dataset through the tokenizer in batches:"""
 
 from transformers import BertTokenizer
-from transformers.adapters import AdapterConfig
-
-model_path = 'model/bert-base-uncased'
-model_name = 'bert-base-uncased'
+model_path = './model/bert-base-uncased/'
+model_name = model_path #'bert-base-uncased'
 tokenizer = BertTokenizer.from_pretrained(model_path)
 
 def encode_batch(batch):
@@ -80,17 +80,38 @@ model = BertModelWithHeads.from_pretrained(
     config=config,
 )
 
-"""Now we have everything set up to load our _AdapterFusion_ setup. First, we load three adapters pre-trained on different tasks from the Hub: MultiNLI, QQP and cb. As we don't need their prediction heads, we pass `with_head=False` to the loading method. Next, we add a new fusion layer that combines all the adapters we've just loaded. Finally, we add a new classification head for our target task on top."""
+"""Now we have everything set up to load our _AdapterFusion_ setup. First, we load three adapters pre-trained on different tasks from the Hub: MultiNLI, QQP and QNLI. As we don't need their prediction heads, we pass `with_head=False, model_name=model_name` to the loading method. Next, we add a new fusion layer that combines all the adapters we've just loaded. Finally, we add a new classification head for our target task on top."""
 
 from transformers.adapters.composition import Fuse
-adapter_config = AdapterConfig.load("pfeiffer")
+
 # Load the pre-trained adapters we want to fuse
-model.load_adapter("model/model_adapters/multinli", load_as="multinli", with_head=False, model_name=model_name)
-model.load_adapter("model/model_adapters/qqp", with_head=False, model_name=model_name)
-model.load_adapter("model/model_adapters/cb", with_head=False, model_name=model_name)
+lang_adapter_config = AdapterConfig.load("pfeiffer", non_linearity="gelu", reduction_factor=2)
+model.load_adapter("nli/multinli@ukp", load_as="multinli", with_head=False,model_name=model_name)
+model.load_adapter("sts/qqp@ukp",  load_as="qqp", with_head=False, model_name=model_name,)
+model.load_adapter("sentiment/sst-2@ukp",  load_as="sst-2", with_head=False, model_name=model_name)
+model.load_adapter("comsense/winogrande@ukp",  load_as="winogrande", with_head=False, model_name=model_name)
+model.load_adapter("sentiment/imdb@ukp",  load_as="imdb", with_head=False, model_name=model_name)
+model.load_adapter("comsense/hellaswag@ukp", load_as="hellaswag", with_head=False, model_name=model_name)
+
+model.load_adapter("comsense/siqa@ukp", load_as="siqa", with_head=False, model_name=model_name)
+model.load_adapter("comsense/cosmosqa@ukp", load_as="cosmosqa",with_head=False, model_name=model_name)
+model.load_adapter("nli/scitail@ukp", load_as="scitail",with_head=False, model_name=model_name)
+model.load_adapter("argument/ukpsent@ukp", load_as="ukpsent",with_head=False, model_name=model_name)
+
+model.load_adapter("comsense/csqa@ukp", load_as="csqa",with_head=False, model_name=model_name)
+model.load_adapter("qa/boolq@ukp", load_as="boolq",with_head=False, model_name=model_name)
+model.load_adapter("sts/mrpc@ukp", load_as="mrpc",with_head=False, model_name=model_name)
+
+model.load_adapter("nli/sick@ukp", load_as="sick",with_head=False, model_name=model_name)
+model.load_adapter("nli/rte@ukp", load_as="rte",with_head=False, model_name=model_name)
+model.load_adapter("nli/cb@ukp", load_as="cb",with_head=False, model_name=model_name)
+
 # Add a fusion layer for all loaded adapters
-model.add_adapter_fusion(Fuse("multinli", "qqp", "cb"))
-model.set_active_adapters(Fuse("multinli", "qqp", "cb"))
+# Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb")
+# model.add_adapter_fusion(Fuse("multinli", "qqp", "qnli"))
+model.add_adapter_fusion(Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb"))
+# model.set_active_adapters(Fuse("multinli", "qqp", "qnli"))
+model.set_active_adapters(Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb"))
 
 # Add a classification head for our target task
 model.add_classification_head("cb", num_labels=len(id2label))
@@ -105,7 +126,7 @@ The syntax for the adapter setup (which is also applied to other methods such as
 """
 
 # Unfreeze and activate fusion setup
-adapter_setup = Fuse("multinli", "qqp", "cb")
+adapter_setup = Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb")
 model.train_adapter_fusion(adapter_setup)
 
 """For training, we make use of the `Trainer` class built-in into `transformers`. We configure the training process using a `TrainingArguments` object and define a method that will calculate the evaluation accuracy in the end. We pass both, together with the training and validation split of our dataset, to the trainer instance."""
@@ -127,8 +148,9 @@ training_args = TrainingArguments(
 
 def compute_accuracy(p: EvalPrediction):
   preds = np.argmax(p.predictions, axis=1)
-  return {"acc": (preds == p.label_ids).mean()}
 
+  print("acc is",(preds == p.label_ids).mean())
+  return {"acc": (preds == p.label_ids).mean()}
 trainer = AdapterTrainer(
     model=model,
     args=training_args,
@@ -146,7 +168,7 @@ trainer.train()
 trainer.evaluate()
 
 """We can also use our setup to make some predictions (the example is from the test set of CB):"""
-
+print("predict")
 import torch
 
 def predict(premise, hypothesis):
@@ -157,20 +179,20 @@ def predict(premise, hypothesis):
   pred_class = torch.argmax(logits).item()
   return id2label[pred_class]
 
-predict("""
+predict_result = predict("""
 ``It doesn't happen very often.'' Karen went home
 happy at the end of the day. She didn't think that
 the work was difficult.
 """,
 "the work was difficult"
 )
-
+print("predict result is {}",predict_result)
 """Finally, we can extract and save our fusion layer as well as all the adapters we used for training. Both can later be reloaded into the pre-trained model again."""
 
-model.save_adapter_fusion("./saved", "multinli,qqp,cb")
+model.save_adapter_fusion("./saved", "multinli,qqp,qnli")
 model.save_all_adapters("./saved")
 
-# !ls -l saved
+#!ls -l saved
 
 """That's it. Do check out [the paper on AdapterFusion](https://arxiv.org/pdf/2005.00247.pdf) for a more theoretical view on what we've just seen.
 
