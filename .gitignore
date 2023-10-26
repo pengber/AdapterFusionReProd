@@ -5,3 +5,4 @@ model
 .vscode
 ~
 training_output
+test
