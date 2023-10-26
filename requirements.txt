@@ -9,7 +9,6 @@ backcall==0.2.0
 beautifulsoup4==4.11.1
 bleach==5.0.1
 catboost==1.0.6
-certifi @ file:///opt/conda/conda-bld/certifi_1655968806487/work/certifi
 cffi==1.15.1
 charset-normalizer==2.1.0
 cloudpickle==2.1.0
