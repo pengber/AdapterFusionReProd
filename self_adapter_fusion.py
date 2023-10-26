@@ -83,28 +83,28 @@ model = BertModelWithHeads.from_pretrained(
 """Now we have everything set up to load our _AdapterFusion_ setup. First, we load three adapters pre-trained on different tasks from the Hub: MultiNLI, QQP and QNLI. As we don't need their prediction heads, we pass `with_head=False, model_name=model_name` to the loading method. Next, we add a new fusion layer that combines all the adapters we've just loaded. Finally, we add a new classification head for our target task on top."""
 
 from transformers.adapters.composition import Fuse
-
+model_adapter_dir = 'model/model_adapters/'
 # Load the pre-trained adapters we want to fuse
 # lang_adapter_config = AdapterConfig.load("pfeiffer", non_linearity="gelu", reduction_factor=2)
-model.load_adapter("nli/multinli@ukp", load_as="multinli", with_head=False,model_name=model_name)
-model.load_adapter("sts/qqp@ukp",  load_as="qqp", with_head=False, model_name=model_name,)
-model.load_adapter("sentiment/sst-2@ukp",  load_as="sst-2", with_head=False, model_name=model_name)
-model.load_adapter("comsense/winogrande@ukp",  load_as="winogrande", with_head=False, model_name=model_name)
-model.load_adapter("sentiment/imdb@ukp",  load_as="imdb", with_head=False, model_name=model_name)
-model.load_adapter("comsense/hellaswag@ukp", load_as="hellaswag", with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"multinli", load_as="multinli", with_head=False,model_name=model_name)
+model.load_adapter(model_adapter_dir +"qqp",  load_as="qqp", with_head=False, model_name=model_name,)
+model.load_adapter(model_adapter_dir +"sst-2",  load_as="sst-2", with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"winogrande",  load_as="winogrande", with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"imdb",  load_as="imdb", with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"hellaswag", load_as="hellaswag", with_head=False, model_name=model_name)
 
-model.load_adapter("comsense/siqa@ukp", load_as="siqa", with_head=False, model_name=model_name)
-model.load_adapter("comsense/cosmosqa@ukp", load_as="cosmosqa",with_head=False, model_name=model_name)
-model.load_adapter("nli/scitail@ukp", load_as="scitail",with_head=False, model_name=model_name)
-model.load_adapter("argument/ukpsent@ukp", load_as="ukpsent",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"siqa", load_as="siqa", with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"cosmosqa", load_as="cosmosqa",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"scitail", load_as="scitail",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"ukpsent", load_as="ukpsent",with_head=False, model_name=model_name)
 
-model.load_adapter("comsense/csqa@ukp", load_as="csqa",with_head=False, model_name=model_name)
-model.load_adapter("qa/boolq@ukp", load_as="boolq",with_head=False, model_name=model_name)
-model.load_adapter("sts/mrpc@ukp", load_as="mrpc",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"csqa", load_as="csqa",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"boolq", load_as="boolq",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"mrpc", load_as="mrpc",with_head=False, model_name=model_name)
 
-model.load_adapter("nli/sick@ukp", load_as="sick",with_head=False, model_name=model_name)
-model.load_adapter("nli/rte@ukp", load_as="rte",with_head=False, model_name=model_name)
-model.load_adapter("nli/cb@ukp", load_as="cb",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"sick", load_as="sick",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"rte", load_as="rte",with_head=False, model_name=model_name)
+model.load_adapter(model_adapter_dir +"cb", load_as="cb",with_head=False, model_name=model_name)
 
 # Add a fusion layer for all loaded adapters
 # Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb")
