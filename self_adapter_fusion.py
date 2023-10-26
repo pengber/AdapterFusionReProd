@@ -106,6 +106,8 @@ model.load_adapter(model_adapter_dir +"sick", load_as="sick",with_head=False, mo
 model.load_adapter(model_adapter_dir +"rte", load_as="rte",with_head=False, model_name=model_name)
 model.load_adapter(model_adapter_dir +"cb", load_as="cb",with_head=False, model_name=model_name)
 
+#multinli, qqp, sst-2, winogrande, imdb, hellaswag, siqa, cosmosqa, scitail, ukpsent, csqa, boolq, mrpc, sick, rte, cb
+
 # Add a fusion layer for all loaded adapters
 # Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb")
 # model.add_adapter_fusion(Fuse("multinli", "qqp", "qnli"))
@@ -189,7 +191,7 @@ the work was difficult.
 print("predict result is {}",predict_result)
 """Finally, we can extract and save our fusion layer as well as all the adapters we used for training. Both can later be reloaded into the pre-trained model again."""
 
-model.save_adapter_fusion("./saved", "multinli,qqp,qnli")
+model.save_adapter_fusion("./saved", "ultinli, qqp, sst-2, winogrande, imdb, hellaswag, siqa, cosmosqa, scitail, ukpsent, csqa, boolq, mrpc, sick, rte, cb")
 model.save_all_adapters("./saved")
 
 #!ls -l saved
