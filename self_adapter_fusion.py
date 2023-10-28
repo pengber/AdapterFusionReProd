@@ -92,6 +92,7 @@ model.add_adapter_fusion(Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", 
 model.set_active_adapters(Fuse("multinli", "qqp", "sst-2", "winogrande", "imdb", "hellaswag", "siqa", "cosmosqa", "scitail", "ukpsent", "csqa", "boolq", "mrpc", "sick", "rte", "cb"))
 
 # Add a classification head for our target task
+print("len of id2lable", len(id2label))
 model.add_classification_head("cb", num_labels=len(id2label))
 
 """The last preparation step is to define and activate our adapter setup. Similar to `train_adapter()`, `train_adapter_fusion()` does two things: It freezes all weights of the model (including adapters!) except for the fusion layer and classification head. It also activates the given adapter setup to be used in very forward pass.
@@ -113,7 +114,7 @@ import numpy as np
 from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
 
 training_args = TrainingArguments(
-    learning_rate=5e-5,
+    learning_rate=5e-6,
     num_train_epochs=20,
     per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
@@ -127,8 +128,6 @@ training_args = TrainingArguments(
 
 def compute_accuracy(p: EvalPrediction):
   preds = np.argmax(p.predictions, axis=1)
-
-  print("acc is",(preds == p.label_ids).mean())
   return {"acc": (preds == p.label_ids).mean()}
 trainer = AdapterTrainer(
     model=model,
