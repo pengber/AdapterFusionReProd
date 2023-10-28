@@ -135,8 +135,7 @@ trainer = AdapterTrainer(
     args=training_args,
     train_dataset=dataset["train"],
     eval_dataset=dataset["validation"],
-    compute_metrics=compute_accuracy,
-    evaluation_strategy="epoch"
+    compute_metrics=compute_accuracy
 )
 
 """Start the training 🚀 (this will take a while)"""
