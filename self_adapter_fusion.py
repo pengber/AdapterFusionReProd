@@ -55,8 +55,6 @@ model = BertModelWithHeads.from_pretrained(
     model_path,
     config=config,
 )
-for param in model.bert.parameters():
-    param.requires_grad = False
 """Now we have everything set up to load our _AdapterFusion_ setup. First, we load three adapters pre-trained on different tasks from the Hub: MultiNLI, QQP and QNLI. As we don't need their prediction heads, we pass `with_head=False, model_name=model_name` to the loading method. Next, we add a new fusion layer that combines all the adapters we've just loaded. Finally, we add a new classification head for our target task on top."""
 
 from transformers.adapters.composition import Fuse
