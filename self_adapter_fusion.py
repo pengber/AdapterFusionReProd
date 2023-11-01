@@ -166,7 +166,7 @@ the work was difficult.
 print("predict result is {}",predict_result)
 """Finally, we can extract and save our fusion layer as well as all the adapters we used for training. Both can later be reloaded into the pre-trained model again."""
 
-model.save_adapter_fusion("./saved", "16adapter)
+model.save_adapter_fusion("./saved", "16adapter")
 model.save_all_adapters("./saved")
 
 #!ls -l saved
