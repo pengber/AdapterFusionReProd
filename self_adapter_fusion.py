@@ -115,8 +115,8 @@ import numpy as np
 from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
 
 training_args = TrainingArguments(
-    learning_rate=5e-6,
-    num_train_epochs=20,
+    learning_rate=5e-5,
+    num_train_epochs=10,
     per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
     logging_steps=200,
@@ -168,7 +168,7 @@ the work was difficult.
 print("predict result is {}",predict_result)
 """Finally, we can extract and save our fusion layer as well as all the adapters we used for training. Both can later be reloaded into the pre-trained model again."""
 
-model.save_adapter_fusion("./saved", "multinli, qqp, sst-2, winogrande, imdb, hellaswag, siqa, cosmosqa, scitail, ukpsent, csqa, boolq, mrpc, sick, rte, cb")
+model.save_adapter_fusion("./saved", "16adapter)
 model.save_all_adapters("./saved")
 
 #!ls -l saved
