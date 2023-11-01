@@ -16,7 +16,7 @@ dataset['train'].features
 
 from transformers import BertTokenizer
 model_path = './model/bert-base-uncased/'
-model_name = model_path #'bert-base-uncased'
+model_name = 'bert-base-uncased'
 tokenizer = BertTokenizer.from_pretrained(model_path)
 
 def encode_batch(batch):
